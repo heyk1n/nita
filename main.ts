@@ -24,6 +24,7 @@ const model = new GenerativeModel(Deno.env.get("GENAI_API_KEY")!, config.model);
 const sessions = model.startChat(config.session);
 
 const timeouts = new Collection<Snowflake, number>();
+
 client.on(
 	GatewayDispatchEvents.MessageCreate,
 	async ({ api, data: message }) => {
@@ -36,18 +37,25 @@ client.on(
 				entity.id === Deno.env.get("DISCORD_ID")
 			) || timeout)
 		) {
+			await api.channels.showTyping(channelId);
+
 			const response = await sessions.sendMessage(
 				`@${message.author.username}#${message.author.discriminator}: ${
 					message.content.replaceAll(
-						new RegExp(`<@?!${Deno.env.get("DISCORD_ID")}>`),
+						new RegExp(`<@?!${Deno.env.get("DISCORD_ID")}>`, "g"),
 						"@Nita",
 					)
 				}`,
 			);
-			await api.channels.createMessage(channelId, {
-				content: response.response.text(),
-				message_reference: { message_id: message.id },
-			});
+
+			try {
+				await api.channels.createMessage(channelId, {
+					content: response.response.text(),
+					message_reference: { message_id: message.id },
+				});
+			} catch (_err) {
+				await api.channels.deleteMessage(channelId, message.id);
+			}
 
 			if (timeout) clearTimeout(timeout);
 			timeouts.set(

@@ -1,4 +1,4 @@
-import { type ModelParams, type StartChatParams } from "genai";
+import type { ModelParams, StartChatParams } from "genai";
 
 export const model: ModelParams = {
 	model: "gemini-1.0-pro",
