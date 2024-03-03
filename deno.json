@@ -1,0 +1,28 @@
+{
+	"imports": {
+		"@discordjs/collection": "npm:@discordjs/collection",
+		"@discordjs/core": "npm:@discordjs/core",
+		"@discordjs/rest": "npm:@discordjs/rest",
+		"@discordjs/ws": "npm:@discordjs/ws",
+		"genai": "npm:@google/generative-ai@0.2.1"
+	},
+	"fmt": {
+		"useTabs": true,
+		"indentWidth": 4
+	},
+	"lint": {
+		"rules": {
+			"tags": [
+				"recommended"
+			],
+			"include": [
+				"ban-untagged-todo",
+				"no-console"
+			]
+		}
+	},
+	"tasks": {
+		"start": "deno run -A --check main.ts",
+		"test": "deno run -A --watch --env --check main.ts"
+	}
+}

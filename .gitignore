@@ -1,0 +1,3 @@
+.env
+deno.lock
+*_test.ts
