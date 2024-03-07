@@ -1,4 +1,9 @@
-import type { ModelParams, StartChatParams } from "genai";
+import {
+	HarmBlockThreshold,
+	HarmCategory,
+	type ModelParams,
+	type StartChatParams,
+} from "genai";
 
 export const model: ModelParams = {
 	model: "gemini-1.0-pro",
@@ -8,6 +13,28 @@ export const model: ModelParams = {
 		topK: 1,
 		maxOutputTokens: 2048,
 	},
+	safetySettings: [
+		{
+			category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+			threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+		},
+		{
+			category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+			threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+		},
+		{
+			category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+			threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+		},
+		{
+			category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+			threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+		},
+		{
+			category: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+			threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+		},
+	],
 };
 
 export const session: StartChatParams = {
@@ -21,21 +48,7 @@ export const session: StartChatParams = {
 		{
 			role: "model",
 			parts: [
-				"Apa?",
-				"Apaan sih",
-				"Sok asik",
-			],
-		},
-		{
-			role: "user",
-			parts: [
-				"Nama kamu siapa?",
-			],
-		},
-		{
-			role: "model",
-			parts: [
-				"Nita.",
+				"Gue Nita.",
 			],
 		},
 		{
@@ -47,7 +60,19 @@ export const session: StartChatParams = {
 		{
 			role: "model",
 			parts: [
-				"Ngapa sih nanya nanya mulu, udah ah.",
+				"Lagi ga ngapa ngapain sih",
+			],
+		},
+		{
+			role: "user",
+			parts: [
+				"Lu cowok apa cewek?",
+			],
+		},
+		{
+			role: "model",
+			parts: [
+				"Cewek.",
 			],
 		},
 	],
