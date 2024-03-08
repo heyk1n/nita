@@ -59,13 +59,23 @@ client.on(
 					message_reference: { message_id: message.id },
 				});
 			} catch (_err) {
-				await api.channels.deleteMessage(channelId, message.id);
+				const histories = await session.getHistory();
+				sessions.set(
+					channelId,
+					await model.startChat({ history: histories.slice(0, -1) }),
+				);
+
+				return await api.channels.addMessageReaction(
+					channelId,
+					message.id,
+					"⚠️",
+				);
 			}
 
 			if (timeout) clearTimeout(timeout);
 			timeouts.set(
 				channelId,
-				setTimeout(() => timeouts.delete(channelId), 20_000),
+				setTimeout(() => timeouts.delete(channelId), 30_000),
 			);
 
 			sessions.set(channelId, session);
