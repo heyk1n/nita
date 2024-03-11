@@ -29,7 +29,7 @@ client.on(
 	GatewayDispatchEvents.MessageCreate,
 	async ({ api, data: message }) => {
 		const channelId = message.channel_id;
-		const session = sessions.get(channelId) ??
+		let session = sessions.get(channelId) ??
 			await model.startChat(config.session);
 		const timeout = timeouts.get(channelId);
 
@@ -43,7 +43,10 @@ client.on(
 
 			try {
 				const response = await session.sendMessage(
-					`@${message.author.username}#${message.author.discriminator}: ${
+					`@${message.author.id} (${
+						message.member?.nick ?? message.author.global_name ??
+							message.author.username
+					}): ${
 						message.content.replaceAll(
 							new RegExp(
 								`<@?!${Deno.env.get("DISCORD_ID")}>`,
@@ -54,16 +57,27 @@ client.on(
 					}`,
 				);
 
+				let content = response.response.text();
+				for (
+					const [translateKey, translateValue] of Object.entries(
+						config.texts,
+					)
+				) {
+					content = content.replaceAll(
+						`{${translateKey}}`,
+						translateValue,
+					);
+				}
+
 				await api.channels.createMessage(channelId, {
-					content: response.response.text(),
+					content,
 					message_reference: { message_id: message.id },
 				});
 			} catch (_err) {
-				const histories = await session.getHistory();
-				sessions.set(
-					channelId,
-					await model.startChat({ history: histories.slice(0, -1) }),
-				);
+				const history = await session.getHistory();
+				session = await model.startChat({
+					history: history.slice(0, -2),
+				});
 
 				return await api.channels.addMessageReaction(
 					channelId,
